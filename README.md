@@ -34,9 +34,39 @@ there are no more tool calls.
 - **A prompt is a suggestion, not a guarantee.** The model reused a stale time
   even after I told it not to. It also skipped a rule I buried in a tool
   description.
-- **So: model for judgment, code for guarantees.** If a business rule must hold
-  every single time, enforce it in code — don't write it in a tool description
-  and hope.
+
+## Where do you put a rule? Three tiers of reliability
+
+I tested one rule — "if the balance is above 500,000, congratulate the user" —
+in three different places. The results surprised me.
+
+1. **In the tool description (static).** The model reads it once, at the start,
+   before it even has the balance. Reliability: weak. It often skipped the rule,
+   because when it read the rule it had no number to act on.
+
+2. **In the tool result (runtime).** Instead of describing the rule up front, I
+   returned it *with the data* — the balance and the instruction arrive together,
+   at the exact moment the rule becomes true. Reliability jumped to 10/10 in my
+   tests. Same words, better placement: the model acts on instructions that sit
+   next to fresh, relevant data far more reliably than ones it skimmed earlier.
+
+3. **In code (deterministic).** The code checks the number and calls the tool
+   itself. Reliability: 100%, always, forever. The model never gets a vote.
+
+The lesson: **tier 2 raises the odds, tier 3 gives a guarantee.** 10/10 in a test
+is not 10/10 forever — change the model, the temperature, or the length of the
+conversation and the number drops.
+
+## How I decide which tier to use
+
+One question: **if this rule fails once, does someone get hurt?**
+
+- **Yes** (money, security, a booked slot) → enforce it in code. Tier 3.
+- **No** (tone, a nice-to-have nudge like congratulating a high balance) → a rule
+  in the tool result is the right tool. Tier 2. You can't hard-code judgment, and
+  you don't need to.
+
+**Model for judgment, code for guarantees.**
 
 ## Run it
 
