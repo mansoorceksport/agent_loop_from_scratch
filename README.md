@@ -77,3 +77,24 @@ python main.py
 ```
 
 Uses Ollama Cloud. Swap the model string in `main.py` for any tool-capable model.
+
+## What I added: a tool with a parameter
+
+`balance_by_date` is the first tool here that takes an argument — a date string —
+and returns the balance for that date. Adding one parameter meant handling
+everything that can go wrong with it, so this tool has three layers of defense:
+
+- **Format validation in code.** The date must be `YYYY-MM-DD`. I check it with
+  `date.fromisoformat` before touching the data, so an impossible date like
+  `2026-02-30` is rejected too — not just a wrong shape.
+- **Self-healing retry.** When the model sends the wrong format, the tool doesn't
+  just fail — it returns the correct format as an instruction. The model reads
+  that, fixes the date, and calls the tool again on its own. No human in the loop.
+- **Honest handling of missing dates.** A valid date with no record gets a plain
+  "no record for that date" and asks the user to confirm — it never invents a
+  balance.
+
+I keep the format rule in *both* the system prompt and the code on purpose. The
+system prompt is nearly free and gets it right most of the time; the code layer
+costs an extra round-trip but never leaks. Cheap probabilistic layer first,
+deterministic layer last. That's defense in depth.
