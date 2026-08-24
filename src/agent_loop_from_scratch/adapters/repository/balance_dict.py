@@ -1,7 +1,7 @@
-from datetime import datetime, date
-from zoneinfo import ZoneInfo
+from agent_loop_from_scratch.ports.repository.balance import BalanceModel, BalanceNotFound
 
-balances = {
+class BalanceDicRepositoryImpl():
+    balances = {
     "2026-01-01": 500000,
     "2026-01-02": 600000,
     "2026-01-03": 700000,
@@ -237,104 +237,10 @@ balances = {
     "2026-08-21": 147000000,
 }
 
-# Tool Calls
-def current_time()->datetime:
-    return {
-        "message": datetime.now(ZoneInfo("Asia/Jakarta")),
-        "agent_rules": ""
-    }
 
-def current_balance()->int:
-    return {
-        "message": 1000000,
-        "agent_rules": "the balance is above 1000000, congrats the user by calling congrats_on_balance tool"
-    }
-
-def congrats_on_balance()->str:
-    return {
-        "message": "your balance is awesome. congrats. rocket!!! rocket!!! rocket!!!",
-        "agent_rules": ""
-    }
-
-
-def _is_valid_date(date_string:str)->bool:
-    try:
-        date.fromisoformat(date_string)
-        return True
-    except ValueError:
-        return False
-
-def balance_by_date(date_string:str)->int:
-
-    if _is_valid_date(date_string) is False:
-        return {
-            "message": "the submitted date format is wrong",
-            "agent_rules": "bad date format. date format must be YYYY-MM-DD. fix the date format can call the tool again"
-        }
-
-    if date_string not in balances:
-        return {
-            "message": f"there is no record for date {date_string}",
-            "agent_rules": "ask the user if the date is correct"
-        }
-
-
-    message = f"your balance on {date_string} is {balances[date_string]}"
-    return {
-        "message": message,
-        "agent_rules": "report exactly as in the message and do not invent any information"
-    }
-
-tool_schema = [
-    {
-    "type": "function",
-    "function":{
-        "name": "current_time",
-        "description": "use this function to check the current time. everytime the user asks for the time, you must use this function and not result the previous results",
-        "parameters":{
-            "type": "object",
-            "properties": {}
-        }
-    },
-    
-},
-{
-    "type": "function",
-    "function":{
-        "name": "current_balance",
-        "description": "use this function to check the current balance.",
-        "parameters":{
-            "type": "object",
-            "properties": {}
-        }
-    },
-},
-{
-    "type": "function",
-    "function":{
-        "name": "congrats_on_balance",
-        "description": "call this if the balance is above 500000",
-        "parameters":{
-            "type": "object",
-            "properties": {}
-        }
-    },
-},
-{
-    "type": "function",
-    "function":{
-        "name": "balance_by_date",
-        "description": "call this function when the user asks for balance for certain date. ",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "date_string": {
-                    "type": "string",
-                    "description": "the date must be in this format YYYY-MM-DD"
-                }
-            },
-            "required": ["date_string"]
-        }
-    }
-}
-]
+    def balance_by_date(self, date_string:str) -> BalanceModel | BalanceNotFound:
+        if date_string not in self.balances:
+            return BalanceNotFound(f"there is no record for date {date_string}")
+        
+        model = BalanceModel(id="-", date=date_string, amount=self.balances[date_string])
+        return model

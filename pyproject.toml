@@ -1,0 +1,26 @@
+[project]
+name = "agent-loop-from-scratch"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "mansoorceksport", email = "mansoor@ceksport.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "ollama>=0.6.2",
+    "pymongo>=4.17.0",
+    "python-dotenv>=1.2.3",
+]
+
+[project.scripts]
+agent-loop = "agent_loop_from_scratch.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"

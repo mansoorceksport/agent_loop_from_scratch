@@ -1,0 +1,19 @@
+{
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/.pytest_cache": true,
+        "**/.ruff_cache": true,
+        "**/.DS_Store": true,
+        "**/dist": true
+    },
+    "search.exclude": {
+        "**/.venv": true,
+        "**/uv.lock": true
+    }
+}

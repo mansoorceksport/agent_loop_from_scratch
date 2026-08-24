@@ -71,12 +71,13 @@ One question: **if this rule fails once, does someone get hurt?**
 ## Run it
 
 ```bash
-pip install -r requirements.txt
+uv sync
 echo "OLLAMA_API_KEY=your_key_here" > .env
-python main.py
+echo "MONGO_DB_URI=your_mongo_uri_here" >> .env
+uv run agent-loop
 ```
 
-Uses Ollama Cloud. Swap the model string in `main.py` for any tool-capable model.
+Uses Ollama Cloud and MongoDB Atlas. Swap the model string in `main.py` for any tool-capable model.
 
 ## What I added: a tool with a parameter
 
